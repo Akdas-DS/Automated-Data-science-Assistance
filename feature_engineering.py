@@ -17,7 +17,7 @@ import itertools
 
 # Maximum number of numeric columns to use for interaction features.
 # Prevents combinatorial explosion on wide datasets.
-MAX_COLS = 8
+MAX_COLS = 5
 
 
 def generate_interaction_features(

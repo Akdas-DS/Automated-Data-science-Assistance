@@ -5,9 +5,12 @@ A fully automated, zero-code predictive analytics platform.
 """
 
 import io
+import gc
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 import nbformat
@@ -29,11 +32,11 @@ from visualizations import (
 # ════════════════════════════════════════════════════════════════════════════
 # CACHING WRAPPERS
 # ════════════════════════════════════════════════════════════════════════════
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner=False, max_entries=2)
 def run_cached_cleaning(df: pd.DataFrame) -> dict:
     return clean_dataset(df)
 
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner=False, max_entries=2)
 def run_cached_feature_engineering(df: pd.DataFrame, target: str) -> tuple:
     return generate_interaction_features(df, target)
 
@@ -404,11 +407,13 @@ if st.session_state.get("analysis_done"):
         feat_importances = results.get("feature_importances")
         if feat_importances is not None:
             st.markdown("### Top Feature Determinants")
-            fig_imp, ax_imp = plt.subplots(figsize=(10, 4))
+            fig_imp, ax_imp = plt.subplots(figsize=(9, 4))
             sns.barplot(x=feat_importances.values, y=feat_importances.index, palette="viridis", ax=ax_imp)
-            ax_imp.set_title("Machine Learning Feature Impact / Coefficients")
+            ax_imp.set_title("Feature Impact / Coefficients")
             plt.tight_layout()
             st.pyplot(fig_imp)
+            plt.close(fig_imp)
+            gc.collect()
             
         # ── Notebook Generation ──────────────────────────────────────────────
         st.markdown('<div class="custom-divider"></div>', unsafe_allow_html=True)
