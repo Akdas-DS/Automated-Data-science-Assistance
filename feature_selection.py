@@ -58,11 +58,17 @@ def prepare_features_and_target(
     y = df[target_column].copy()
     X = df.drop(columns=[target_column])
 
-    # Encode categorical target
+    # Encode categorical target (robust check for ANY non-numeric type)
     label_encoder = None
-    if y.dtype == "object" or y.dtype.name == "category":
+    if not np.issubdtype(y.dtype, np.number):
         label_encoder = LabelEncoder()
-        y = pd.Series(label_encoder.fit_transform(y), name=target_column)
+        y = pd.Series(label_encoder.fit_transform(y.astype(str)), name=target_column)
+    else:
+        # Even numeric classification targets need contiguous 0-indexed labels for XGBoost
+        unique_vals = sorted(y.unique())
+        if unique_vals != list(range(len(unique_vals))):
+            label_encoder = LabelEncoder()
+            y = pd.Series(label_encoder.fit_transform(y), name=target_column)
 
     # Encode categorical features automatically
     for col in X.select_dtypes(include=["object", "category"]).columns:
