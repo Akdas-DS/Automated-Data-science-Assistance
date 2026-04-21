@@ -54,8 +54,14 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
-    html, body, [class*="st-"] {
+    /* Safe Global Inheritance */
+    html, body, .stApp, .st-emotion-cache-16txtl3 {
         font-family: 'Outfit', sans-serif;
+    }
+    
+    /* Strong Protection for Streamlit Internal Material Icons */
+    .material-icons, .material-symbols-rounded, .material-symbols-outlined, [class*="icon"] {
+        font-family: 'Material Icons', 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif !important;
     }
     
     /* Header gradient bar - Deep Emerald to Slate */
